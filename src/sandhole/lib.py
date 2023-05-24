@@ -67,13 +67,12 @@ def main(args):
 
     for file_path in file_paths:
         path = resolve_path(file_path)
-        if not path.exists() and path.name not in ignore_list:
+        if path.name in ignore_list:
+            continue
+
+        if not path.exists():
             print(f"File not found: {path}", file=sys.stderr)
-        elif (
-            path.is_file()
-            and path.stat().st_mtime >= threshold
-            and path.name not in ignore_list
-        ):
+        elif path.is_file() and path.stat().st_mtime >= threshold:
             print(file_path)
 
 

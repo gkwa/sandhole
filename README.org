@@ -1,0 +1,16 @@
+Relies on awesome ripgrep https://github.com/BurntSushi/ripgrep#ripgrep-rg
+
+#+begin_example
+pip install sandhole
+rg --files ~/pdev >/tmp/list # source root
+#+end_example
+
+Find golang gorm examples modified within the last 3w but exclude crap from deliverhalf project and python files
+#+begin_example
+sandhole /tmp/list 3w | grep -vF .py | grep -vi deliver | xargs -d '\n' -a - rg -li gorm
+#+end_example
+
+show all modified files within last 1w
+#+begin_example
+sandhole /tmp/list 1w
+#+end_example

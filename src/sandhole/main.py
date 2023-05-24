@@ -26,6 +26,8 @@ import sys
 
 from sandhole import __version__
 
+from . import lib
+
 __author__ = "Taylor Monacelli"
 __copyright__ = "Taylor Monacelli"
 __license__ = "MIT"
@@ -78,7 +80,7 @@ def parse_args(args):
         action="version",
         version=f"sandhole {__version__}",
     )
-    parser.add_argument(dest="n", help="n-th Fibonacci number", type=int, metavar="INT")
+    # parser.add_argument(dest="n", help="n-th Fibonacci", type=int, metavar="INT")
     parser.add_argument(
         "-v",
         "--verbose",
@@ -94,6 +96,20 @@ def parse_args(args):
         help="set loglevel to DEBUG",
         action="store_const",
         const=logging.DEBUG,
+    )
+    parser.add_argument(
+        "list_file", help="pathlib.Path to the file containing the list of file paths"
+    )
+    parser.add_argument(
+        "age",
+        type=lib.parse_timestamp,
+        help="Age threshold for file modification time (e.g., 1h, 2d, 1w, 1m, 4y)",
+    )
+    parser.add_argument(
+        "--append-ignore",
+        nargs="+",
+        default=[],
+        help="File names to append to the ignore list",
     )
     return parser.parse_args(args)
 
@@ -122,8 +138,8 @@ def main(args):
     """
     args = parse_args(args)
     setup_logging(args.loglevel)
-    _logger.debug("Starting crazy calculations...")
-    print(f"The {args.n}-th Fibonacci number is {fib(args.n)}")
+    # _logger.debug("Starting crazy calculations...")
+    lib.main(args)
     _logger.info("Script ends here")
 
 

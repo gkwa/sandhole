@@ -20,7 +20,7 @@ I typically put all my source stuff in root ~/pdev so I do this one time:
 rg --files ~/pdev >/tmp/list 2>/dev/null
 #+end_example
 
-...then subsequent sandhole runs I reuse this re-use this file list in various queries:
+...then subsequent sandhole runs I reuse this file list in various queries:
 
 ** usage
 *** example: find Golang Gorm examples modified within the last 3w
@@ -33,6 +33,7 @@ First:
 
 next:
 #+begin_example
+# not inerested in python or stuff from deliverhalf project atm.
 sandhole /tmp/list 3w | grep -vF .py | grep -vi deliver | xargs -d '\n' -a - rg -li gorm
 #+end_example
 

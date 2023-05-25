@@ -15,18 +15,18 @@ pip install --upgrade sandhole
 
 ** gather list of files
 
-Do this one time:
+I typically put all my source stuff in root ~/pdev so I do this one time:
 #+begin_example
 rg --files ~/pdev >/tmp/list 2>/dev/null
 #+end_example
 
-...then subsequent sandhole runs will re-use this list.
+...then subsequent sandhole runs I reuse this re-use this file list in various queries:
 
 ** usage
 *** example: find Golang Gorm examples modified within the last 3w
 
 Find Golang Gorm examples modified within the last 3w but exclude crap
-from deliverhalf project and python files
+from deliverhalf project and python files.
 
 First:
 [[*gather list of files][gather list of files]]

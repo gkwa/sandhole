@@ -1,19 +1,13 @@
 * sandhole
-** what sucks
-*** its too slow, should cache
-
 ** relies on awesome ripgrep
 
 From:
 https://github.com/BurntSushi/ripgrep#ripgrep-rg
 
-** install
-
-#+begin_example
-pip install --upgrade sandhole
-#+end_example
-
-** gather list of files
+** what sucks atm
+*** this sucks: its too slow, should cache
+** usage
+*** first, gather list of files
 
 I typically put all my source stuff in root ~/pdev so I do this one time:
 #+begin_example
@@ -22,7 +16,6 @@ rg --files ~/pdev >/tmp/list 2>/dev/null
 
 ...then subsequent sandhole runs I reuse this file list in various queries:
 
-** usage
 *** example: find Golang Gorm examples modified within the last 3w
 
 Find Golang Gorm examples modified within the last 3w but exclude crap
@@ -45,4 +38,9 @@ First:
 next:
 #+begin_example
 sandhole /tmp/list 1w
+#+end_example
+** install
+
+#+begin_example
+pip install --upgrade sandhole
 #+end_example

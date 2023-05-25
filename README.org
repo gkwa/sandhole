@@ -1,4 +1,4 @@
-* sandhole
+* sandhole: find files modified within the last 1w, 20d, 1h etc.
 ** relies on awesome ripgrep
 
 From:

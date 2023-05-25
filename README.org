@@ -11,23 +11,37 @@ https://github.com/BurntSushi/ripgrep#ripgrep-rg
 
 #+begin_example
 pip install --upgrade sandhole
+#+end_example
+
+** gather list of files
+
+Do this one time:
+#+begin_example
 rg --files ~/pdev >/tmp/list 2>/dev/null
 #+end_example
 
-** usage
-*** example: find Golang Gorm examples modified within the last 3w but exclude crap from deliverhalf project and python files
+...then subsequent sandhole runs will re-use this list.
 
+** usage
+*** example: find Golang Gorm examples modified within the last 3w
+
+Find Golang Gorm examples modified within the last 3w but exclude crap
+from deliverhalf project and python files
+
+First:
+[[*gather list of files][gather list of files]]
+
+next:
 #+begin_example
 sandhole /tmp/list 3w | grep -vF .py | grep -vi deliver | xargs -d '\n' -a - rg -li gorm
 #+end_example
 
-show all modified files within last 1w
-#+begin_example
-sandhole /tmp/list 1w
-#+end_example
-
 *** example: show all modified files within last 1w
 
+First:
+[[*gather list of files][gather list of files]]
+
+next:
 #+begin_example
 sandhole /tmp/list 1w
 #+end_example

@@ -1,6 +1,9 @@
 import argparse
+import datetime
 import pathlib
+import re
 import sys
+import tempfile
 import time
 
 import platformdirs
@@ -32,11 +35,85 @@ def resolve_path(path):
     return resolved_path
 
 
+def format_file_list(input_file, output_file):
+    with open(output_file, "w") as outfile:
+        with open(input_file, "r") as infile:
+            lines = infile.readlines()
+
+        for line in lines:
+            file_path = line.strip()
+            path = pathlib.Path(file_path)
+            if path.exists():
+                mtime = path.stat().st_mtime
+                mtime_str = datetime.datetime.fromtimestamp(mtime).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+                outfile.write(f"{mtime_str} {file_path}\n")
+            else:
+                print(f"File not found: {file_path}\n", sys.stderr)
+
+    with open(output_file, "r") as infile:
+        lines = infile.readlines()
+
+    lines.sort(
+        key=lambda line: datetime.datetime.strptime(line[:19], "%Y-%m-%d %H:%M:%S"),
+        reverse=True,
+    )
+
+    with open(input_file, "w") as outfile:
+        for line in lines:
+            outfile.write(line)
+
+
+def parse_line(line):
+    index = line.find("/")
+    if index != -1:
+        timestamp_str = line[:index].strip()
+        path = line[index:].strip()
+    else:
+        timestamp_str = line.strip()
+        path = ""
+
+    timestamp = datetime.datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+
+    return timestamp, path
+
+
+def process_file_until_timestamp(input_file, stop_timestamp):
+    with open(input_file, "r") as infile:
+        for line in infile:
+            timestamp, file_path = parse_line(line)
+            path = pathlib.Path(file_path)
+            if not path.exists():
+                print(f"File not found: {file_path}", file=sys.stderr)
+                continue
+
+            if timestamp < stop_timestamp:
+                break
+            print(file_path)
+
+
+def is_file_sorted(file_path):
+    with open(file_path, "r") as file:
+        for i, line in enumerate(file):
+            if i >= 10:
+                break
+            line = line.strip()
+            if not re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} .+$", line):
+                return False
+    return True
+
+
 def main(args):
     current_time = time.time()
     threshold = current_time - args.age
+    threshold = datetime.datetime.fromtimestamp(threshold)
 
     list_file = resolve_path(args.list_file)
+
+    if not is_file_sorted(list_file):
+        temp_file_path = pathlib.Path(tempfile.mkstemp()[1])
+        format_file_list(list_file, temp_file_path)
 
     if not list_file.exists():
         print(f"File not found: {list_file}", file=sys.stderr)
@@ -62,18 +139,7 @@ def main(args):
             if config and "ignore_list" in config:
                 ignore_list.extend(config["ignore_list"])
 
-    with list_file.open("r") as file:
-        file_paths = file.read().splitlines()
-
-    for file_path in file_paths:
-        path = resolve_path(file_path)
-        if path.name in ignore_list:
-            continue
-
-        if not path.exists():
-            print(f"File not found: {path}", file=sys.stderr)
-        elif path.is_file() and path.stat().st_mtime >= threshold:
-            print(file_path)
+    process_file_until_timestamp(list_file, threshold)
 
 
 if __name__ == "__main__":
